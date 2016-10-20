@@ -39,12 +39,25 @@ public class CustomerController {
         return CustomerResponse.withCustomer(savedCustomer);
     }
 
+    /**
+     * As a customer I want to see my next appointment
+     *
+     * @param customerId
+     * @return
+     */
     @RequestMapping(value = "{customerId}/appointments/next", method = RequestMethod.GET)
     public AppointmentResponse getNextAppointment(@PathVariable("customerId") Long customerId) {
         final Appointment nextAppointment = userService.getNextAppointment(customerId);
         return AppointmentResponse.withAppointment(nextAppointment);
     }
 
+    /**
+     * As a customer I want to rate my last appointment
+     *
+     * @param customerId
+     * @param rating
+     * @return
+     */
     @RequestMapping(value = "/{customerId}/appointments/last/rate/{rating}", method = RequestMethod.POST)
     public AppointmentResponse rateLastAppointment(@PathVariable("customerId") Long customerId, @PathVariable("rating") String rating) {
         try {

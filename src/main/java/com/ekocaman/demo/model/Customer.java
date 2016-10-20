@@ -2,12 +2,14 @@ package com.ekocaman.demo.model;
 
 import com.ekocaman.demo.request.CustomerRequest;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
 
 @Data
+@EqualsAndHashCode(exclude = {"appointments", "reviews"})
 @Entity
 public class Customer {
 

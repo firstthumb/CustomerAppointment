@@ -55,6 +55,12 @@ public class UserServiceTest {
 
     @Test
     public void testAddAppointmentSuccessfully() {
+        // Create Audiologist
+        Audiologist audiologist = new Audiologist();
+        audiologist.setFirstName(UUID.randomUUID().toString());
+        audiologist.setLastName(UUID.randomUUID().toString());
+        audiologist = userService.saveAudiologist(audiologist);
+
         Customer customer = new Customer();
         customer.setFirstName(UUID.randomUUID().toString());
         customer.setLastName(UUID.randomUUID().toString());
@@ -63,10 +69,7 @@ public class UserServiceTest {
         assertThat(customer, is(notNullValue()));
         assertThat(customer.getId(), is(notNullValue()));
 
-        final Appointment appointment = new Appointment();
-        appointment.setDate(new Date());
-        appointment.setCustomer(customer);
-        userService.saveAppointment(appointment);
+        final Appointment appointment = userService.saveAppointment(audiologist.getId(), customer.getId(), new Date());
 
         customer.setAppointments(newArrayList(appointment));
         customer = userService.saveCustomer(customer);
@@ -103,22 +106,12 @@ public class UserServiceTest {
 
         // Next Week Appointments
         for (int i = 0; i < 10; i++) {
-            // Create Appointment
-            Appointment appointment = new Appointment();
-            appointment.setDate(new Date(nextWeekDate.getTime() + 5 * 60 * 1000 * (i + 1)));
-            appointment.setCustomer(customer);
-            appointment.setAudiologist(audiologist);
-            userService.saveAppointment(appointment);
+            userService.saveAppointment(audiologist.getId(), customer.getId(), new Date(nextWeekDate.getTime() + 5 * 60 * 1000 * (i + 1)));
         }
 
         // Last Week Appointments
         for (int i = 0; i < 10; i++) {
-            // Create Appointment
-            Appointment appointment = new Appointment();
-            appointment.setDate(new Date(System.currentTimeMillis() - 5 * 60 * 1000 * (i + 1)));
-            appointment.setCustomer(customer);
-            appointment.setAudiologist(audiologist);
-            userService.saveAppointment(appointment);
+            userService.saveAppointment(audiologist.getId(), customer.getId(), new Date(nextWeekDate.getTime() - 5 * 60 * 1000 * (i + 1)));
         }
 
         List<Appointment> nextWeekAppointments = userService.getNextWeekAppointments(audiologist.getId());
@@ -148,11 +141,7 @@ public class UserServiceTest {
         Appointment firstAppointment = null;
         for (int i = 0; i < 10; i++) {
             // Create Appointment
-            Appointment appointment = new Appointment();
-            appointment.setDate(new Date(System.currentTimeMillis() + 5 * 60 * 1000 * (i + 1)));
-            appointment.setCustomer(customer);
-            appointment.setAudiologist(audiologist);
-            appointment = userService.saveAppointment(appointment);
+            Appointment appointment = userService.saveAppointment(audiologist.getId(), customer.getId(), new Date(System.currentTimeMillis() + 5 * 60 * 1000 * (i + 1)));
 
             if (i == 0) {
                 firstAppointment = appointment;
@@ -186,11 +175,7 @@ public class UserServiceTest {
         Appointment lastAppointment = null;
         for (int i = 0; i < 10; i++) {
             // Create Appointment
-            Appointment appointment = new Appointment();
-            appointment.setDate(new Date(System.currentTimeMillis() - 5 * 60 * 1000 * (i + 1)));
-            appointment.setCustomer(customer);
-            appointment.setAudiologist(audiologist);
-            appointment = userService.saveAppointment(appointment);
+            Appointment appointment = userService.saveAppointment(audiologist.getId(), customer.getId(), new Date(System.currentTimeMillis() - 5 * 60 * 1000 * (i + 1)));
 
             if (i == 0) {
                 lastAppointment = appointment;

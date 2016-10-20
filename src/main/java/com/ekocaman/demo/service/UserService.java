@@ -6,6 +6,7 @@ import com.ekocaman.demo.model.Customer;
 import com.ekocaman.demo.model.Rating;
 
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 
 public interface UserService {
@@ -18,7 +19,7 @@ public interface UserService {
     public Customer findByCustomerId(@NotNull Long customerId);
 
 
-    public Appointment saveAppointment(@NotNull Appointment appointment);
+    public Appointment saveAppointment(long audiologistId, long customerId, Date date);
 
     public List<Appointment> getNextWeekAppointments(long audiologistId);
 

@@ -1,5 +1,6 @@
 package com.ekocaman.demo.controller;
 
+import com.ekocaman.demo.model.Appointment;
 import com.ekocaman.demo.model.Customer;
 import com.ekocaman.demo.request.AppointmentRequest;
 import com.ekocaman.demo.request.CustomerRequest;
@@ -36,7 +37,8 @@ public class AudiologistController {
      */
     @RequestMapping(value = "/{audiologistId}/appointments", method = RequestMethod.POST)
     public AppointmentResponse addAppointment(@PathVariable("audiologistId") Long audiologistId, @RequestBody AppointmentRequest appointmentRequest) {
-        return null;
+        final Appointment appointment = userService.saveAppointment(audiologistId, appointmentRequest.getCustomerId(), appointmentRequest.getDate());
+        return AppointmentResponse.withAppointment(appointment);
     }
 
 

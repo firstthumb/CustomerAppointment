@@ -75,10 +75,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Appointment saveAppointment(@NotNull Appointment appointment) {
-        LOG.info("Saving appointment ==> {}", appointment);
+    public Appointment saveAppointment(long audiologistId, long customerId, Date date) {
+        LOG.info("Saving appointment ==> {} {} {}", audiologistId, customerId, date);
 
-        Objects.requireNonNull(appointment, "Appointment cannot be null");
+        Objects.requireNonNull(date, "Date cannot be null");
+
+        final Audiologist audiologist = audiologistRepository.findOne(audiologistId);
+        Objects.requireNonNull(audiologist, "Audiologist does not exists");
+
+        final Customer customer = customerRepository.findOne(customerId);
+        Objects.requireNonNull(customer, "Customer does not exists");
+
+        final Appointment appointment = new Appointment();
+        appointment.setAudiologist(audiologist);
+        appointment.setCustomer(customer);
+        appointment.setDate(date);
 
         final Appointment savedAppointment = appointmentRepository.save(appointment);
         LOG.info("Save appointment result : {}", savedAppointment);

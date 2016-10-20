@@ -1,4 +1,4 @@
-TransactionRest
+Customer Appointment Rest
 =================
 
 [![Build Status](https://travis-ci.org/firstthumb/CustomerAppointment.svg?branch=master)](https://travis-ci.org/firstthumb/CustomerAppointment)

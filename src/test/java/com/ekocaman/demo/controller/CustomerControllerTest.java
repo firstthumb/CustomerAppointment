@@ -1,10 +1,6 @@
 package com.ekocaman.demo.controller;
 
-import com.ekocaman.demo.config.AppConfig;
-import com.ekocaman.demo.model.Appointment;
-import com.ekocaman.demo.model.Audiologist;
-import com.ekocaman.demo.model.Customer;
-import com.ekocaman.demo.model.Rating;
+import com.ekocaman.demo.model.*;
 import com.ekocaman.demo.repository.AppointmentRepository;
 import com.ekocaman.demo.repository.AudiologistRepository;
 import com.ekocaman.demo.repository.CustomerRepository;
@@ -18,10 +14,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -33,13 +28,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = AppConfig.class)
-@WebAppConfiguration
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class CustomerControllerTest {
 
     @Autowired
@@ -85,9 +79,9 @@ public class CustomerControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customer_id").value(is(notNullValue())))
                 .andExpect(jsonPath("$.first_name").value(is(firstName)))
                 .andExpect(jsonPath("$.last_name").value(is(lastName)))
-                .andExpect(jsonPath("$.id").value(is(notNullValue())))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -110,38 +104,46 @@ public class CustomerControllerTest {
     }
 
     @Test
-    public void testUpdateCustomerSuccessfully() throws Exception {
-        final String firstName = UUID.randomUUID().toString();
-        final String lastName = UUID.randomUUID().toString();
+    public void testGetNextAppointmentSuccessfully() throws Exception {
+        // Create Audiologist
+        final Audiologist audiologist = new Audiologist();
+        audiologist.setFirstName(UUID.randomUUID().toString());
+        audiologist.setLastName(UUID.randomUUID().toString());
+        final Audiologist savedAudiologist = audiologistRepository.save(audiologist);
 
+        // Create Customer
         final Customer customer = new Customer();
-        customer.setFirstName(firstName);
-        customer.setLastName(lastName);
+        customer.setFirstName(UUID.randomUUID().toString());
+        customer.setLastName(UUID.randomUUID().toString());
         final Customer savedCustomer = customerRepository.save(customer);
-        String url = "/api/v1/customers/" + savedCustomer.getId();
 
-        final String firstNameUpdated = UUID.randomUUID().toString();
-        final String lastNameUpdated = UUID.randomUUID().toString();
+        // Create Next Appointment
+        Appointment firstAppointment = null;
+        for (int i = 0; i < 10; i++) {
+            final Appointment appointment = new Appointment();
+            appointment.setAudiologist(savedAudiologist);
+            appointment.setCustomer(savedCustomer);
+            appointment.setDate(new Date(System.currentTimeMillis() + 5 * 60 * 1000 * (i + 1)));
+            appointmentRepository.save(appointment);
 
-        final CustomerRequest request = ImmutableCustomerRequest.builder()
-                .firstName(firstNameUpdated)
-                .lastName(lastNameUpdated)
-                .build();
+            if (i == 0) {
+                firstAppointment = appointment;
+            }
+        }
 
-        final String response = mvc.perform(put(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
+        final String url = "/api/v1/customers/" + savedCustomer.getId() + "/appointments/next";
+
+        final String response = mvc.perform(get(url)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.customer_id").value(is(savedCustomer.getId().intValue())))
-                .andExpect(jsonPath("$.first_name").value(is(firstNameUpdated)))
-                .andExpect(jsonPath("$.last_name").value(is(lastNameUpdated)))
+                .andExpect(jsonPath("$.appointment_id").value(is(firstAppointment.getId().intValue())))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        final CustomerResponse customerResponse = mapper.readValue(response, CustomerResponse.class);
+        final AppointmentResponse appointmentResponse = mapper.readValue(response, AppointmentResponse.class);
 
-        assertThat(customerResponse, is(notNullValue()));
+        assertThat(appointmentResponse, is(notNullValue()));
     }
 
     @Test
@@ -178,5 +180,14 @@ public class CustomerControllerTest {
         final AppointmentResponse appointmentResponse = mapper.readValue(response, AppointmentResponse.class);
 
         assertThat(appointmentResponse, is(notNullValue()));
+
+        // Check Review
+        final Appointment fetchedAppointment = appointmentRepository.findOne(appointment.getId());
+
+        assertThat(fetchedAppointment, is(notNullValue()));
+        assertThat(fetchedAppointment.getReviews().size(), is(1));
+        for (Review review : fetchedAppointment.getReviews()) {
+            assertThat(review.getRating(), is(Rating.AVERAGE));
+        }
     }
 }

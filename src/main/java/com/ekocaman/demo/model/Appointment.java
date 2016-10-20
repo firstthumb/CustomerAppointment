@@ -1,6 +1,7 @@
 package com.ekocaman.demo.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import java.util.Set;
 
 @Data
 @ToString(exclude = {"customer", "audiologist", "reviews"})
+@EqualsAndHashCode(exclude = {"customer", "audiologist", "reviews"})
 @Entity
 public class Appointment {
 

@@ -35,13 +35,13 @@ public abstract class CustomerResponse {
                 .firstName(customer.getFirstName())
                 .lastName(customer.getLastName());
 
-
         final List<AppointmentResponse> appointments = new ArrayList<>();
-        for (Appointment appointment : customer.getAppointments()) {
-            appointments.add(AppointmentResponse.withAppointment(appointment));
+        if (customer.getAppointments() != null) {
+            for (Appointment appointment : customer.getAppointments()) {
+                appointments.add(AppointmentResponse.withAppointment(appointment));
+            }
         }
         builder.appointments(appointments);
-
 
         return builder.build();
     }
