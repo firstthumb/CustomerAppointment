@@ -38,8 +38,10 @@ public abstract class AppointmentResponse {
 
 
         final List<ReviewResponse> reviews = new ArrayList<>();
-        for (Review review : appointment.getReviews()) {
-            reviews.add(ReviewResponse.withReview(review));
+        if (appointment.getReviews() != null) {
+            for (Review review : appointment.getReviews()) {
+                reviews.add(ReviewResponse.withReview(review));
+            }
         }
         builder.reviews(reviews);
 

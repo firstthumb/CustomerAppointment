@@ -37,9 +37,11 @@ Payload { "customer_id": 1, "date": "" }
 Response { "appointment_id": 1, "date": "" }
 
 GET /api/v1/audiologists/{audiologistId}/appointments/overview
-Response 
+Response { "appointments": [ { "appointment_id": 1, "date": "", "reviews": [ { "customer_id": 1, "rating": "", "date": "" } ] } ] }
 
 GET /api/v1/audiologists/{audiologistId}/appointments?date=NextWeek
-Response 
+Response { "appointments": [ { "appointment_id": 1, "date": "", "reviews": [ { "customer_id": 1, "rating": "", "date": "" } ] } ] }
 
 ```
+
+PostMan Collection Link : [Rest Client](https://www.getpostman.com/collections/0b4272f941733eb87865)

@@ -1,13 +1,10 @@
 package com.ekocaman.demo.controller;
 
 import com.ekocaman.demo.model.Appointment;
-import com.ekocaman.demo.model.Customer;
+import com.ekocaman.demo.model.Audiologist;
 import com.ekocaman.demo.request.AppointmentRequest;
-import com.ekocaman.demo.request.CustomerRequest;
-import com.ekocaman.demo.response.AppointmentOverviewResponse;
-import com.ekocaman.demo.response.AppointmentResponse;
-import com.ekocaman.demo.response.CustomerResponse;
-import com.ekocaman.demo.response.ImmutableAppointmentOverviewResponse;
+import com.ekocaman.demo.request.AudiologistRequest;
+import com.ekocaman.demo.response.*;
 import com.ekocaman.demo.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +26,12 @@ public class AudiologistController {
         this.userService = userService;
     }
 
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public AudiologistResponse saveCustomer(@RequestBody AudiologistRequest audiologistRequest) {
+        final Audiologist audiologist = Audiologist.withRequest(audiologistRequest);
+        final Audiologist savedAudiologist = userService.saveAudiologist(audiologist);
+        return AudiologistResponse.withAudiologist(savedAudiologist);
+    }
 
     /**
      * As an audiologist I want to create appointments with a customer

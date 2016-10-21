@@ -109,9 +109,11 @@ public class UserServiceTest {
             userService.saveAppointment(audiologist.getId(), customer.getId(), new Date(nextWeekDate.getTime() + 5 * 60 * 1000 * (i + 1)));
         }
 
+        calendar.add(Calendar.WEEK_OF_MONTH, -2);
+        final Date lastWeekDate = calendar.getTime();
         // Last Week Appointments
         for (int i = 0; i < 10; i++) {
-            userService.saveAppointment(audiologist.getId(), customer.getId(), new Date(nextWeekDate.getTime() - 5 * 60 * 1000 * (i + 1)));
+            userService.saveAppointment(audiologist.getId(), customer.getId(), new Date(lastWeekDate.getTime() - 5 * 60 * 1000 * (i + 1)));
         }
 
         List<Appointment> nextWeekAppointments = userService.getNextWeekAppointments(audiologist.getId());
