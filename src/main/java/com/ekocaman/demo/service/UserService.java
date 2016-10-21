@@ -18,6 +18,7 @@ public interface UserService {
 
     public Customer findByCustomerId(@NotNull Long customerId);
 
+    public List<Appointment> getAppointments(long audiologistId);
 
     public Appointment saveAppointment(long audiologistId, long customerId, Date date);
 

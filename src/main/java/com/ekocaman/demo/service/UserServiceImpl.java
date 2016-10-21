@@ -1,6 +1,6 @@
 package com.ekocaman.demo.service;
 
-import com.ekocaman.demo.exc.CustomerNotFoundException;
+import com.ekocaman.demo.exc.NotFoundException;
 import com.ekocaman.demo.model.*;
 import com.ekocaman.demo.repository.AppointmentRepository;
 import com.ekocaman.demo.repository.AudiologistRepository;
@@ -68,10 +68,23 @@ public class UserServiceImpl implements UserService {
         LOG.info("Customer found : {}", customer);
 
         if (customer == null) {
-            throw new CustomerNotFoundException("Customer with Id : " + customerId + " could not be found");
+            throw new NotFoundException("Customer with Id : " + customerId + " could not be found");
         }
 
         return customer;
+    }
+
+    @Override
+    public List<Appointment> getAppointments(long audiologistId) {
+        LOG.info("Finding appointments by audiologistId : {}", audiologistId);
+
+        final Audiologist audiologist = audiologistRepository.findOne(audiologistId);
+
+        if (audiologist == null) {
+            throw new NotFoundException("Audiologist with Id : " + audiologistId + " could not be found");
+        }
+
+        return audiologist.getAppointments();
     }
 
     @Override

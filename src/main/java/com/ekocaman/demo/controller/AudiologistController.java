@@ -7,12 +7,14 @@ import com.ekocaman.demo.request.CustomerRequest;
 import com.ekocaman.demo.response.AppointmentOverviewResponse;
 import com.ekocaman.demo.response.AppointmentResponse;
 import com.ekocaman.demo.response.CustomerResponse;
+import com.ekocaman.demo.response.ImmutableAppointmentOverviewResponse;
 import com.ekocaman.demo.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -54,6 +56,16 @@ public class AudiologistController {
             @PathVariable("audiologistId") Long audiologistId,
             @RequestParam(value = "date", required = false) String date) {
 
+        if (date != null && date.equalsIgnoreCase("NextWeek")) {
+            final List<Appointment> nextWeekAppointments = userService.getNextWeekAppointments(audiologistId);
+
+            final List<AppointmentResponse> response = new ArrayList<>();
+            for (Appointment appointment : nextWeekAppointments) {
+                response.add(AppointmentResponse.withAppointment(appointment));
+            }
+            return response;
+        }
+
         return null;
     }
 
@@ -67,6 +79,15 @@ public class AudiologistController {
     public AppointmentOverviewResponse getAppointmentsOverview(
             @PathVariable("audiologistId") Long audiologistId) {
 
-        return null;
+        final List<Appointment> appointments = userService.getAppointments(audiologistId);
+
+        final List<AppointmentResponse> responses = new ArrayList<>();
+        for (Appointment appointment : appointments) {
+            responses.add(AppointmentResponse.withAppointment(appointment));
+        }
+
+        return ImmutableAppointmentOverviewResponse.builder()
+                .appointments(responses)
+                .build();
     }
 }

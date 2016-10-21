@@ -13,3 +13,5 @@ hs_err_pid*
 .idea/
 ca-rest.iml
 target/
+ca-rest.ipr
+ca-rest.iws

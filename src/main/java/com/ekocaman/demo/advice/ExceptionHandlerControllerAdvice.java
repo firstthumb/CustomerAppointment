@@ -1,6 +1,6 @@
 package com.ekocaman.demo.advice;
 
-import com.ekocaman.demo.exc.CustomerNotFoundException;
+import com.ekocaman.demo.exc.NotFoundException;
 import com.ekocaman.demo.exc.InvalidParameterException;
 import com.ekocaman.demo.response.ImmutableStatusResponse;
 import com.ekocaman.demo.response.StatusResponse;
@@ -20,7 +20,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ExceptionHandlerControllerAdvice extends ResponseEntityExceptionHandler {
     private static Logger LOG = LoggerFactory.getLogger(ExceptionHandlerControllerAdvice.class);
 
-    @ExceptionHandler(CustomerNotFoundException.class)
+    @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<Object> handleCustomerNotFoundException(Exception e) {
         HttpHeaders headers = new HttpHeaders();
